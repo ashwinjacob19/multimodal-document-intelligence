@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.chunking.models import ChunkData
 from app.db.models.chunk import Chunk
 from app.db.models.document import Document, DocumentStatus, DocumentType
 from app.db.session import AsyncSessionLocal
@@ -29,15 +30,15 @@ async def test_chunk_persistence() -> None:
         doc_id = doc.id
 
         try:
-            # 2. Create two Chunk objects
-            chunk1 = Chunk(
+            # 2. Create two ChunkData objects
+            chunk1 = ChunkData(
                 document_id=doc_id,
                 page_number=1,
                 chunk_index=0,
                 text="This is page 1 first chunk.",
                 char_count=len("This is page 1 first chunk."),
             )
-            chunk2 = Chunk(
+            chunk2 = ChunkData(
                 document_id=doc_id,
                 page_number=2,
                 chunk_index=1,
@@ -46,7 +47,7 @@ async def test_chunk_persistence() -> None:
             )
 
             # 3. Save them using ChunkService.save
-            await ChunkService.save(db, [chunk1, chunk2])
+            db_chunks = await ChunkService.save(db, [chunk1, chunk2])
 
             # 4. Verify they were successfully persisted
             stmt = (
@@ -75,8 +76,8 @@ async def test_chunk_persistence() -> None:
             db_doc = res_doc.scalar_one()
 
             assert len(db_doc.chunks) == 2
-            assert db_doc.chunks[0].id == chunk1.id
-            assert db_doc.chunks[1].id == chunk2.id
+            assert db_doc.chunks[0].id == db_chunks[0].id
+            assert db_doc.chunks[1].id == db_chunks[1].id
 
         finally:
             # Cleanup to keep database clean (cascades to chunks)
