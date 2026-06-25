@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.documents import router as documents_router
 from app.db.session import get_db
 
 app = FastAPI(
@@ -19,6 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register API routers
+app.include_router(documents_router)
 
 
 @app.get("/health", status_code=status.HTTP_200_OK)

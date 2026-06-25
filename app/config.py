@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
+    UPLOAD_DIR: str = "/app/uploads"
 
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
