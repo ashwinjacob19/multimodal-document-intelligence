@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "/app/uploads"
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
+    EMBEDDING_PROVIDER: str = "sentence-transformers"
+    EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
 
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
