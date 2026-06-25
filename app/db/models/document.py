@@ -1,11 +1,15 @@
 import enum
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
+
+if TYPE_CHECKING:
+    from app.db.models.chunk import Chunk
 
 
 class DocumentType(enum.StrEnum):
@@ -46,4 +50,9 @@ class Document(Base):
         nullable=False,
         server_default=sa.func.now(),
         onupdate=sa.func.now(),
+    )
+
+    # Relationships
+    chunks: Mapped[list["Chunk"]] = relationship(
+        "Chunk", back_populates="document", cascade="all, delete-orphan"
     )
