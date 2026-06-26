@@ -21,6 +21,7 @@ class RetrievedChunkResponse(BaseModel):
     chunk_index: int
     text: str
     similarity: float
+    rerank_score: float | None = None
 
     model_config = {
         "from_attributes": True,

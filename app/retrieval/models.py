@@ -10,6 +10,7 @@ class RetrievedChunk:
     chunk_index: int
     text: str
     similarity: float
+    rerank_score: float | None = None
 
 
 @dataclass(frozen=True)

@@ -12,8 +12,10 @@ from app.llm.models import PromptBundle
 from app.llm.prompt_builder import GeminiPromptBuilder
 from app.llm.provider import FakeLLMProvider
 from app.main import app
+from app.reranking.provider import FakeRerankProvider
 from app.retrieval.models import RetrievalContext, RetrievalMetadata, RetrievedChunk
 from app.services.answer_service import AnswerService
+from app.services.rerank_service import RerankService
 from app.services.retrieval_service import RetrievalService
 from app.services.search_service import SearchService
 
@@ -53,7 +55,11 @@ async def test_answer_service_orchestration() -> None:
     retrieval_service = RetrievalService(search_service)
     fake_llm = FakeLLMProvider(default_response="Bananas are sweet.")
     prompt_builder = GeminiPromptBuilder()
-    answer_service = AnswerService(retrieval_service, fake_llm, prompt_builder)
+    fake_reranker = FakeRerankProvider()
+    rerank_service = RerankService(fake_reranker)
+    answer_service = AnswerService(
+        retrieval_service, rerank_service, fake_llm, prompt_builder
+    )
 
     async with AsyncSessionLocal() as db:
         # Create test document and chunk
@@ -108,7 +114,11 @@ async def test_answer_service_empty_retrieval() -> None:
     retrieval_service = RetrievalService(search_service)
     fake_llm = FakeLLMProvider(default_response="I do not know.")
     prompt_builder = GeminiPromptBuilder()
-    answer_service = AnswerService(retrieval_service, fake_llm, prompt_builder)
+    fake_reranker = FakeRerankProvider()
+    rerank_service = RerankService(fake_reranker)
+    answer_service = AnswerService(
+        retrieval_service, rerank_service, fake_llm, prompt_builder
+    )
 
     async with AsyncSessionLocal() as db:
         ans, context = await answer_service.ask(db, "", limit=1)

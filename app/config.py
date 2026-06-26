@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     MAX_SEARCH_LIMIT: int = 20
     GEMINI_API_KEY: str | None = None
     GEMINI_MODEL: str = "gemini-2.5-flash"
+    RERANK_PROVIDER: str = "sbert"
+    RERANK_MODEL: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"

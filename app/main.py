@@ -11,12 +11,14 @@ from app.api.retrieval import router as retrieval_router
 from app.api.search import router as search_router
 from app.db.session import get_db
 from app.llm.factory import LLMProviderFactory
+from app.reranking.factory import RerankProviderFactory
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifespan event handler to initialize and log LLM configuration."""
+    """Lifespan event handler to initialize LLM and Rerank configurations."""
     LLMProviderFactory.create()
+    RerankProviderFactory.create()
     yield
 
 
