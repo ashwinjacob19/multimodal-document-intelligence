@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     EMBEDDING_PROVIDER: str = "sentence-transformers"
     EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
     EMBEDDING_DIMENSION: int = 384
+    DEFAULT_SEARCH_LIMIT: int = 5
+    MAX_SEARCH_LIMIT: int = 20
 
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
