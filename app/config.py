@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     EMBEDDING_DIMENSION: int = 384
     DEFAULT_SEARCH_LIMIT: int = 5
     MAX_SEARCH_LIMIT: int = 20
+    GEMINI_API_KEY: str | None = None
+    GEMINI_MODEL: str = "gemini-2.5-flash"
 
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"

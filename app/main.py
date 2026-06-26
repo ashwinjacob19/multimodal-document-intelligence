@@ -1,17 +1,30 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.answer import router as answer_router
 from app.api.documents import router as documents_router
 from app.api.retrieval import router as retrieval_router
 from app.api.search import router as search_router
 from app.db.session import get_db
+from app.llm.factory import LLMProviderFactory
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan event handler to initialize and log LLM configuration."""
+    LLMProviderFactory.create()
+    yield
+
 
 app = FastAPI(
     title="Enterprise Multimodal Document Intelligence Platform",
     description="Milestone 1 - Project Foundation",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # Set up CORS middleware
@@ -27,6 +40,7 @@ app.add_middleware(
 app.include_router(documents_router)
 app.include_router(search_router)
 app.include_router(retrieval_router)
+app.include_router(answer_router)
 
 
 @app.get("/health", status_code=status.HTTP_200_OK)
