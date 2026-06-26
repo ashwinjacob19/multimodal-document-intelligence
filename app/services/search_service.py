@@ -1,4 +1,5 @@
 import asyncio
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,12 +13,15 @@ class SearchService:
         """Initializes SearchService with an injected EmbeddingProvider."""
         self.embedding_provider = embedding_provider
 
-    async def search(self, db: AsyncSession, query: SearchQuery) -> list[SearchResult]:
-        """Performs semantic vector similarity search over chunks table using pgvector."""
+    async def search(
+        self, db: AsyncSession, query: SearchQuery
+    ) -> list[SearchResult]:
+        """Performs semantic vector similarity search using pgvector."""
         if not query.text.strip():
             return []
 
-        # 1. Generate query embedding (CPU-bound local sentence-transformers, offloaded to thread pool)
+        # 1. Generate query embedding via CPU-bound local sentence-transformers
+        # (offloaded to a thread pool to avoid blocking the async event loop).
         query_results = await asyncio.to_thread(
             self.embedding_provider.embed, [query.text]
         )

@@ -1,10 +1,8 @@
 import asyncio
-import math
 import uuid
 
 import httpx
 import pytest
-from sqlalchemy import select
 
 from app.config import settings
 from app.db.models.chunk import Chunk
@@ -32,7 +30,7 @@ def test_search_query_model_validation() -> None:
 
 @pytest.mark.asyncio
 async def test_semantic_search_ranking_filtering_and_determinism() -> None:
-    """Verifies correct ranking, document scope filtering, and deterministic ordering."""
+    """Verifies search ranking, document filtering, and deterministic ordering."""
     provider = EmbeddingProviderFactory.create()
     service = SearchService(provider)
 
@@ -92,7 +90,7 @@ async def test_semantic_search_ranking_filtering_and_determinism() -> None:
         await db.commit()
 
         try:
-            # 4. Search query matching text1 closely (should rank chunk1 and chunk3 first)
+            # 4. Search query matching text1 closely (should rank chunks 1 and 3 first)
             query_fox = SearchQuery(text="brown fox jumps", limit=5)
             results_fox = await service.search(db, query_fox)
 

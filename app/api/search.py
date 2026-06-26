@@ -45,7 +45,10 @@ async def search_chunks(
     ),
     limit: int = Query(
         settings.DEFAULT_SEARCH_LIMIT,
-        description=f"Maximum number of results to return (max {settings.MAX_SEARCH_LIMIT})",
+        description=(
+            "Maximum number of results to return "
+            f"(max {settings.MAX_SEARCH_LIMIT})"
+        ),
         ge=1,
     ),
     db: AsyncSession = Depends(get_db),

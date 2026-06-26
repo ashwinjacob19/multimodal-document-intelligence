@@ -4,6 +4,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.documents import router as documents_router
+from app.api.retrieval import router as retrieval_router
 from app.api.search import router as search_router
 from app.db.session import get_db
 
@@ -25,6 +26,7 @@ app.add_middleware(
 # Register API routers
 app.include_router(documents_router)
 app.include_router(search_router)
+app.include_router(retrieval_router)
 
 
 @app.get("/health", status_code=status.HTTP_200_OK)
