@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 200
     EMBEDDING_PROVIDER: str = "sentence-transformers"
     EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
+    EMBEDDING_DIMENSION: int = 384
 
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"

@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from app.chunking.models import ChunkData
+from app.chunking.models import EmbeddedChunkData
 from app.db.models.chunk import Chunk
 from app.db.models.document import Document, DocumentStatus, DocumentType
 from app.db.session import AsyncSessionLocal
@@ -30,20 +30,22 @@ async def test_chunk_persistence() -> None:
         doc_id = doc.id
 
         try:
-            # 2. Create two ChunkData objects
-            chunk1 = ChunkData(
+            # 2. Create two EmbeddedChunkData objects
+            chunk1 = EmbeddedChunkData(
                 document_id=doc_id,
                 page_number=1,
                 chunk_index=0,
                 text="This is page 1 first chunk.",
                 char_count=len("This is page 1 first chunk."),
+                embedding=[0.1] * 384,
             )
-            chunk2 = ChunkData(
+            chunk2 = EmbeddedChunkData(
                 document_id=doc_id,
                 page_number=2,
                 chunk_index=1,
                 text="This is page 2 first chunk.",
                 char_count=len("This is page 2 first chunk."),
+                embedding=[0.2] * 384,
             )
 
             # 3. Save them using ChunkService.save

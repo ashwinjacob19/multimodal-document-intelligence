@@ -81,19 +81,19 @@ async def test_pdf_upload_chunking_integration() -> None:
     res_data = response.json()
     assert "document_id" in res_data
     assert res_data["filename"] == "test.pdf"
-    assert res_data["status"] == "processing"
+    assert res_data["status"] == "processed"
 
     doc_id = uuid.UUID(res_data["document_id"])
 
     # Verify database state
     async with AsyncSessionLocal() as db:
-        # 1. Verify document exists and status remains 'processing'
+        # 1. Verify document exists and status is 'processed'
         stmt_doc = select(Document).where(Document.id == doc_id)
         res_doc = await db.execute(stmt_doc)
         db_doc = res_doc.scalar_one_or_none()
 
         assert db_doc is not None
-        assert db_doc.status == DocumentStatus.processing
+        assert db_doc.status == DocumentStatus.processed
 
         # 2. Verify chunks are persisted
         stmt_chunks = (

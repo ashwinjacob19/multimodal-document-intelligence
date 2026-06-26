@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+from pgvector.sqlalchemy import Vector
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.config import settings
 from app.db.session import Base
 
 if TYPE_CHECKING:
@@ -26,6 +28,9 @@ class Chunk(Base):
     chunk_index: Mapped[int] = mapped_column(sa.Integer, nullable=False)
     text: Mapped[str] = mapped_column(sa.Text, nullable=False)
     char_count: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    embedding: Mapped[list[float] | None] = mapped_column(
+        Vector(settings.EMBEDDING_DIMENSION), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         sa.DateTime(timezone=True),
         nullable=False,
@@ -37,9 +42,15 @@ class Chunk(Base):
         "Document", back_populates="chunks"
     )
 
-    # Unique constraint on (document_id, chunk_index)
+    # Table constraints and indexes
     __table_args__ = (
         sa.UniqueConstraint(
             "document_id", "chunk_index", name="uq_document_chunk_index"
+        ),
+        sa.Index(
+            "idx_chunks_embedding",
+            "embedding",
+            postgresql_using="hnsw",
+            postgresql_ops={"embedding": "vector_cosine_ops"},
         ),
     )

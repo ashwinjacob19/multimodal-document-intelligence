@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.document import Document, DocumentStatus, DocumentType
 from app.db.session import get_db
+from app.embeddings.factory import EmbeddingProviderFactory
+from app.embeddings.provider import EmbeddingProvider
 from app.processing.processor import DocumentProcessor
 from app.services.storage import StorageService
 
@@ -32,10 +34,22 @@ EXTENSION_TO_DOC_TYPE = {
 storage_service = StorageService()
 
 
+# Dependency injection helpers
+def get_embedding_provider() -> EmbeddingProvider:
+    return EmbeddingProviderFactory.create()
+
+
+def get_document_processor(
+    provider: EmbeddingProvider = Depends(get_embedding_provider),
+) -> DocumentProcessor:
+    return DocumentProcessor(provider)
+
+
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_document(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
+    processor: DocumentProcessor = Depends(get_document_processor),
 ) -> dict:
     """Uploads a document, saves it to disk, and registers it in PostgreSQL."""
     if not file.filename:
@@ -93,10 +107,11 @@ async def upload_document(
         ) from e
 
     # Invoke the document processor to start pipeline
-    await DocumentProcessor.process(new_doc, db)
+    await processor.process(new_doc, db)
 
     return {
         "document_id": str(new_doc.id),
         "filename": new_doc.filename,
         "status": new_doc.status,
     }
+
